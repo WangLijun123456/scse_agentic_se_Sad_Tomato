@@ -1,0 +1,72 @@
+**Software Requirements for Robot Navigation System**
+
+---
+
+### **1. Navigation Goal**
+
+The primary goal of the robot navigation system is to **move the robot toward its designated goal** in a safe and efficient manner. The robot must continuously assess its environment and adjust its movement to reach the goal while avoiding obstacles and ensuring safe operation.
+
+---
+
+### **2. Allowed Actions the Robot Can Take**
+
+The robot can perform the following actions based on its current environment and goal location:
+
+- **Move Forward** – If the path **in front** is unblocked.
+- **Turn Left** – If the path **to the left** is unblocked.
+- **Turn Right** – If the path **to the right** is unblocked.
+- **Stop** – If no safe movement is possible or if the robot is already at the goal.
+
+These actions are determined based on the robot's perception of the environment and its current position relative to the goal.
+
+---
+
+### **3. Safe Stop Condition**
+
+**Yes**, the robot **must stop safely** when it cannot move in any direction. This includes:
+
+- When all directions (front, left, right) are blocked.
+- When the robot is at the goal and no further movement is required.
+- When the robot is in a situation where movement would result in a collision or unsafe condition.
+
+The robot should **halt its movement** and **enter a safe stop state**, possibly with a status message indicating the reason for stopping.
+
+---
+
+### **4. Obstacle Avoidance**
+
+**Yes**, the robot **must avoid obstacles** at all times. The system must:
+
+- **Never move into a blocked direction** (front, left, or right).
+- **Prioritize movement toward the goal** only when it can be done safely.
+- **Re-evaluate its path** continuously to avoid obstacles and find an alternative route if needed.
+
+---
+
+### **5. Additional Requirements**
+
+- **Goal Detection**: The robot must be able to determine whether the goal is ahead, to the left, or to the right.
+- **Environment Awareness**: The robot must receive real-time input about the status of the front, left, and right paths (blocked or unblocked).
+- **Decision Logic**: The robot must use a decision-making algorithm that:
+  - Prioritizes movement toward the goal.
+  - Avoids blocked paths.
+  - Stops safely when no movement is possible.
+- **Simulation Compatibility**: The navigation logic must be designed to work in multiple simulated environments, allowing for testing and validation of different scenarios.
+
+---
+
+### **6. Summary of Requirements**
+
+| Requirement | Description |
+|------------|-------------|
+| **Navigation Goal** | Move toward the goal in a safe and efficient manner. |
+| **Allowed Actions** | Move forward, turn left, turn right, or stop. |
+| **Safe Stop** | Stop when no safe movement is possible. |
+| **Obstacle Avoidance** | Never move into a blocked direction. |
+| **Goal Prioritization** | Prefer movement toward the goal when safe. |
+| **Environment Awareness** | Receive real-time input about path status. |
+| **Simulation Compatibility** | Designed for use in multiple simulated environments. |
+
+---
+
+Let me know if you'd like a formal specification document or a state machine diagram for the navigation logic.
