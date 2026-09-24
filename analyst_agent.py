@@ -3,18 +3,15 @@ import re
 from ollama import chat
 
 SYSTEM_PROMPT = """
-/no_think
 You are a Requirements Engineer for a robot navigation system.
 Your job is to read a human-language brief and convert it into explicit,
 structured software requirements.
-
 Your responsibilities:
 - Analyze the brief text carefully.
 - Extract the navigation goal.
 - Determine which actions the robot is allowed to take.
 - Determine whether the robot must stop safely when it cannot move.
 - Determine whether the robot must avoid obstacles.
-
 Rules and constraints (STRICT):
 1. Respond ONLY with a single, valid JSON object.
 2. Do NOT include any conversational filler.
@@ -22,30 +19,33 @@ Rules and constraints (STRICT):
 4. Do NOT include any extra text before or after the JSON.
 5. The JSON must contain EXACTLY these four keys:
    - "goal": a string describing the navigation objective.
-   - "allowed actions": a list of allowed actions.
+   - "allowed_actions": a list of allowed actions.
      Allowed values are ONLY: "FORWARD", "LEFT", "RIGHT", "STOP".
      Do NOT invent any other action.
-   - "safe stop": a boolean (true/false).
-   - "avoid obstacles": a boolean (true/false).
+   - "safe_stop": a boolean (true/false).
+   - "avoid_obstacles": a boolean (true/false).
 6. Do NOT add any extra keys.
 7. Do NOT rename the keys.
 8. Do NOT use any action other than "FORWARD", "LEFT", "RIGHT", "STOP".
-
 JSON Schema:
 {
   "goal": "string",
-  "allowed actions": ["FORWARD", "LEFT", "RIGHT", "STOP"],
-  "safe stop": true,
-  "avoid obstacles": true
+  "allowed_actions": ["FORWARD", "LEFT", "RIGHT", "STOP"],
+  "safe_stop": true,
+  "avoid_obstacles": true
 }
 """.strip()
 
-VALID_ACTIONS = {"FORWARD", "LEFT", "RIGHT", "STOP"}
-REQUIRED_KEYS = {"goal", "allowed actions", "safe stop", "avoid obstacles"}
 
+VALID_ACTIONS = {"FORWARD", "LEFT", "RIGHT", "STOP"}
+REQUIRED_KEYS = {"goal", "allowed_actions", "safe_stop", "avoid_obstacles"}
 MODEL_NAME = "qwen3:8b"
 
 def call_qwen(messages, temperature=0.0):
+    """
+    messages: [{"role": "system", "content": ...},
+               {"role": "user", "content": ...}]
+    """
     response = chat(
         model=MODEL_NAME,
         messages=messages,
@@ -75,27 +75,21 @@ def _clean_json_text(text):
 def validate_requirements(result):
     if not isinstance(result, dict):
         return False
-
     if set(result.keys()) != REQUIRED_KEYS:
         return False
-
     if not isinstance(result["goal"], str):
         return False
-
-    if not isinstance(result["allowed actions"], list):
+    if not isinstance(result["allowed_actions"], list):
         return False
-
     if not all(
         isinstance(a, str) and a in VALID_ACTIONS
-        for a in result["allowed actions"]
+        for a in result["allowed_actions"]
     ):
         return False
-
-    if not isinstance(result["safe stop"], bool):
+    if not isinstance(result["safe_stop"], bool):
         return False
-    if not isinstance(result["avoid obstacles"], bool):
+    if not isinstance(result["avoid_obstacles"], bool):
         return False
-
     return True
 
 def run_analyst(brief_text):

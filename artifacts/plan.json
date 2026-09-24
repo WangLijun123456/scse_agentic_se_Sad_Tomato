@@ -1,0 +1,10 @@
+{
+  "strategy": "Navigate forward while continuously checking for obstacles, adjusting direction as needed to avoid them.",
+  "decisions": [
+    "FORWARD",
+    "LEFT",
+    "RIGHT",
+    "STOP"
+  ],
+  "stop_condition": "reaching the goal location"
+}
