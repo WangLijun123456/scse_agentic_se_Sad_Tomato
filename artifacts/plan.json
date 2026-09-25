@@ -1,10 +1,12 @@
 {
-  "strategy": "Navigate forward while continuously checking for obstacles, adjusting direction as needed to avoid them.",
+  "strategy": "Prioritize moving toward the goal when safe, avoid obstacles, and stop if all directions are blocked.",
   "decisions": [
-    "FORWARD",
-    "LEFT",
-    "RIGHT",
-    "STOP"
+    "If goal_ahead is true and front_blocked is false, then FORWARD.",
+    "If goal_on_left is true and left_blocked is false, then LEFT.",
+    "If goal_on_right is true and right_blocked is false, then RIGHT.",
+    "If front_blocked is true and left_blocked is false, then LEFT.",
+    "If front_blocked is true and right_blocked is false, then RIGHT.",
+    "If front_blocked is true and left_blocked is true and right_blocked is true, then STOP."
   ],
-  "stop_condition": "reaching the goal location"
+  "stop_condition": "When front_blocked, left_blocked, and right_blocked are all true."
 }

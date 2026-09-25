@@ -42,10 +42,6 @@ REQUIRED_KEYS = {"goal", "allowed_actions", "safe_stop", "avoid_obstacles"}
 MODEL_NAME = "qwen3:8b"
 
 def call_qwen(messages, temperature=0.0):
-    """
-    messages: [{"role": "system", "content": ...},
-               {"role": "user", "content": ...}]
-    """
     response = chat(
         model=MODEL_NAME,
         messages=messages,

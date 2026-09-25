@@ -2,32 +2,31 @@ import json
 from ollama import chat
 
 PLANNER_SYSTEM_PROMPT = """
-You are a Planner Agent in a multi-agent software engineering system.
-
-Your role:
-- You receive validated requirements from an Analyst Agent.
-- You must decide HOW the software (a robot navigation system) should behave.
-- You produce a navigation plan in strict JSON format.
-
-The robot can only perform these actions: FORWARD, LEFT, RIGHT, STOP.
-
-You must output ONLY a valid JSON object with EXACTLY this structure:
+You are a Planner Agent. You receive validated requirements and produce a navigation plan.
+The robot can only perform: FORWARD, LEFT, RIGHT, STOP.
+The robot perceives these booleans:
+  goal_ahead, goal_on_left, goal_on_right,
+  front_blocked, left_blocked, right_blocked
+Navigation rules:
+1. Never move into a blocked direction.
+2. Prefer moving toward the goal when safe.
+3. If front is blocked, try LEFT or RIGHT toward a safe direction.
+4. If all directions are blocked -> STOP.
+5. If the goal is on the left but left is blocked, and front is clear, then FORWARD.
+6. If the goal is on the right but right is blocked, and front is clear, then FORWARD.
+Output ONLY a JSON object with EXACTLY these three keys:
 {
-    "strategy": "A short description of the navigation strategy",
-    "decisions": [
-        "A list of decisions the robot can take during navigation",
-        "Each decision must be a string",
-        "Decisions should reference only FORWARD, LEFT, RIGHT, STOP"
-    ],
-    "stop_condition": "The exact point/condition at which the robot must stop"
+  "strategy":   "short description of the navigation strategy",
+  "decisions":  [list of conditional rules],
+  "stop_condition": "when the robot must stop"
 }
-
-Rules:
-- Do NOT include any explanation, markdown, or text outside the JSON.
-- Do NOT add extra keys.
-- "decisions" must be a non-empty list of strings.
-- "strategy" and "stop_condition" must be non-empty strings.
-- Only use the allowed actions: FORWARD, LEFT, RIGHT, STOP.
+Rules for "decisions":
+- Each entry MUST be a conditional sentence.
+- Each entry MUST reference the state fields above.
+- Each entry MUST end with exactly one of: FORWARD, LEFT, RIGHT, STOP.
+- BAD : "FORWARD"
+- GOOD: "If goal_ahead is true and front_blocked is false, then FORWARD."
+Do NOT add extra keys or text outside the JSON.
 """
 
 
@@ -78,7 +77,7 @@ def run_planner(requirement):
         format="json",
     )
 
-    raw = response["message"]["content"]
+    raw = response.message.content
 
     try:
         plan = json.loads(raw)
